@@ -5,7 +5,10 @@ package com.github.twohou.sonic;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +20,12 @@ public class IntegrationTest {
   private static final org.slf4j.Logger log =
       org.slf4j.LoggerFactory.getLogger(IntegrationTest.class);
 
+  @Rule
+  public GenericContainer sonic =
+      new GenericContainer<>("valeriansaliou/sonic:v1.2.3")
+          .withClasspathResourceMapping("sonic.cfg", "/etc/sonic.cfg", BindMode.READ_ONLY)
+          .withExposedPorts(1491);
+
   private final String collection = "messages";
   private final String bucket = "default";
   private IngestChannel ingest;
@@ -26,8 +35,8 @@ public class IntegrationTest {
   @Before
   public void setUp() throws IOException {
     // init channels
-    String address = "127.0.0.1";
-    Integer port = 1491;
+    String address = sonic.getContainerIpAddress();
+    Integer port = sonic.getMappedPort(1491);
     String password = "passwd";
     Integer connectionTimeout = 5000;
     Integer readTimeout = 5000;
@@ -86,10 +95,11 @@ public class IntegrationTest {
   public void testIntegration() throws IOException {
     Integer resp = ingest.count(collection);
     log.info("Count collection: {}", resp);
+    assertEquals(1, resp.intValue());
     resp = ingest.count(collection, bucket);
-    System.out.format("Count bucket: %d\n", resp);
+    assertEquals(53, resp.intValue());
     resp = ingest.count(collection, bucket, "1");
-    System.out.format("Count object: %d\n", resp);
+    assertEquals(16, resp.intValue());
 
     // search
     search.ping();

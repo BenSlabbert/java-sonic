@@ -5,6 +5,7 @@ import lombok.NonNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +21,7 @@ public class SearchChannel extends Channel {
     this.start(Mode.search);
   }
 
-  public ArrayList<String> query(
+  public List<String> query(
       @NonNull String collection,
       @NonNull String bucket,
       @NonNull String terms,
@@ -41,13 +42,13 @@ public class SearchChannel extends Channel {
     return assertSearchResults(SearchType.QUERY, queryId);
   }
 
-  public ArrayList<String> query(
+  public List<String> query(
       @NonNull String collection, @NonNull String bucket, @NonNull String terms)
       throws IOException {
     return query(collection, bucket, terms, null, null);
   }
 
-  public ArrayList<String> suggest(
+  public List<String> suggest(
       @NonNull String collection, @NonNull String bucket, @NonNull String word, Integer limit)
       throws IOException {
     this.send(
@@ -63,7 +64,7 @@ public class SearchChannel extends Channel {
     return assertSearchResults(SearchType.SUGGEST, searchId);
   }
 
-  public ArrayList<String> suggest(
+  public List<String> suggest(
       @NonNull String collection, @NonNull String bucket, @NonNull String word) throws IOException {
     return suggest(collection, bucket, word, null);
   }
@@ -82,7 +83,7 @@ public class SearchChannel extends Channel {
     return matcher1.group(1);
   }
 
-  protected ArrayList<String> assertSearchResults(SearchType searchType, String searchId)
+  protected List<String> assertSearchResults(SearchType searchType, String searchId)
       throws IOException {
     String line2 = this.readLine();
     Matcher matcher2 =

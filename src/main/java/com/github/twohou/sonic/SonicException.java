@@ -1,8 +1,6 @@
 package com.github.twohou.sonic;
 
 public class SonicException extends RuntimeException {
-  public SonicException() {}
-
   public SonicException(String message) {
     super(message);
   }

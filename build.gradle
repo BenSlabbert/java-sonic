@@ -1,10 +1,13 @@
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: "maven"
 sourceCompatibility = 11
 
+group = "io.github.benslabbert.trak"
+version = "1.0.0"
+
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
+    mavenLocal()
     jcenter()
     maven {
         url = uri("https://repo.gradle.org/gradle/libs")
@@ -19,4 +22,5 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    testCompile "org.testcontainers:testcontainers:1.12.2"
 }

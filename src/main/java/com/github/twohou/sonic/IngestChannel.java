@@ -26,6 +26,16 @@ public class IngestChannel extends Channel {
     this.assertOK();
   }
 
+  public void push(
+      @NonNull String collection,
+      @NonNull String bucket,
+      @NonNull Integer object,
+      @NonNull String text)
+      throws IOException {
+    this.send(String.format("PUSH %s %s %d \"%s\"", collection, bucket, object, text));
+    this.assertOK();
+  }
+
   public void pop(
       @NonNull String collection,
       @NonNull String bucket,
