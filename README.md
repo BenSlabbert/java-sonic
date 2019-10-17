@@ -1,7 +1,7 @@
 # java-sonic
 
-[![Release](https://jitpack.io/v/twohou/java-sonic.svg)](https://jitpack.io/#twohou/java-sonic)
-[![Build Status](https://travis-ci.com/twohou/java-sonic.svg?branch=master)](https://travis-ci.com/twohou/java-sonic)
+[![Release](https://jitpack.io/v/BenSlabbert/java-sonic.svg)](https://jitpack.io/#BenSlabbert/java-sonic)
+[![Build Status](https://travis-ci.com/BenSlabbert/java-sonic.svg?branch=fork)](https://travis-ci.com/BenSlabbert/java-sonic)
 
 Java client library of [Sonic search](https://github.com/valeriansaliou/sonic/)
 
@@ -9,13 +9,7 @@ Java client library of [Sonic search](https://github.com/valeriansaliou/sonic/)
 
 Tested under Ubuntu Trusty with:
 
-- oraclejdk8
-- oraclejdk9
-- oraclejdk11
-- openjdk8
-- openjdk9
 - openjdk11
-- openjdk12
 
 ## Install
 
