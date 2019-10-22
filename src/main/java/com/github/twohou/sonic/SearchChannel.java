@@ -3,8 +3,8 @@ package com.github.twohou.sonic;
 import lombok.NonNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,29 +74,30 @@ public class SearchChannel extends Channel {
    *
    * @return pending search ID
    */
-  protected String assertPendingSearch() throws IOException {
-    String line1 = this.readLine();
-    Matcher matcher1 = Pattern.compile("^PENDING ([a-zA-Z0-9]+)$").matcher(line1);
-    if (!matcher1.find()) {
-      throw new SonicException("unexpected prompt: " + line1);
+  private String assertPendingSearch() throws IOException {
+    String line = this.readLine();
+    Matcher matcher = Pattern.compile("^PENDING ([a-zA-Z0-9]+)$").matcher(line);
+    if (!matcher.find()) {
+      throw new SonicException("unexpected prompt: " + line);
     }
-    return matcher1.group(1);
+    return matcher.group(1);
   }
 
-  protected List<String> assertSearchResults(SearchType searchType, String searchId)
+  private List<String> assertSearchResults(SearchType searchType, String searchId)
       throws IOException {
-    String line2 = this.readLine();
-    Matcher matcher2 =
-        Pattern.compile("^EVENT " + searchType.name() + " " + searchId + " (.+)?$").matcher(line2);
-    if (!matcher2.find()) {
-      throw new SonicException("unexpected prompt: " + line2);
+    String line = this.readLine();
+    Matcher matcher =
+        Pattern.compile("^EVENT " + searchType.name() + " " + searchId + " (.+)?$").matcher(line);
+
+    if (!matcher.find()) {
+      throw new SonicException("Unexpected prompt: " + line);
     }
 
-    if (matcher2.groupCount() != 1) {
-      return new ArrayList<>();
-    } else {
-      String[] searchResults = matcher2.group(1).split(" ");
-      return new ArrayList<>(Arrays.asList(searchResults));
+    if (matcher.groupCount() != 1 || matcher.group(1) == null) {
+      return Collections.emptyList();
     }
+
+    String[] searchResults = matcher.group(1).split(" ");
+    return Arrays.asList(searchResults);
   }
 }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class IntegrationTest {
 
@@ -111,6 +112,9 @@ public class IntegrationTest {
     responses.sort(String::compareTo);
     assertEquals("3", responses.get(0));
     assertEquals("4", responses.get(1));
+
+    responses = search.query(collection, bucket, "xxx");
+    assertTrue(responses.isEmpty());
 
     responses = search.suggest(collection, bucket, "There");
     assertEquals("theresa", responses.get(0));
