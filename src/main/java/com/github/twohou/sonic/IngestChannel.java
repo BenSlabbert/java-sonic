@@ -1,9 +1,11 @@
 package com.github.twohou.sonic;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+@Slf4j
 public class IngestChannel extends Channel {
   public IngestChannel(
       @NonNull String address,
@@ -22,7 +24,9 @@ public class IngestChannel extends Channel {
       @NonNull String object,
       @NonNull String text)
       throws IOException {
-    this.send(String.format("PUSH %s %s %s \"%s\"", collection, bucket, object, text));
+    String p = String.format("PUSH %s %s %s \"%s\"", collection, bucket, object, text);
+    log.debug("Sonic PUSH: {}", p);
+    this.send(p);
     this.assertOK();
   }
 
@@ -32,7 +36,9 @@ public class IngestChannel extends Channel {
       @NonNull Integer object,
       @NonNull String text)
       throws IOException {
-    this.send(String.format("PUSH %s %s %d \"%s\"", collection, bucket, object, text));
+    String p = String.format("PUSH %s %s %d \"%s\"", collection, bucket, object, text);
+    log.debug("Sonic PUSH: {}", p);
+    this.send(p);
     this.assertOK();
   }
 
@@ -42,7 +48,9 @@ public class IngestChannel extends Channel {
       @NonNull String object,
       @NonNull String text)
       throws IOException {
-    this.send(String.format("POP %s %s %s \"%s\"", collection, bucket, object, text));
+    String p = String.format("POP %s %s %s \"%s\"", collection, bucket, object, text);
+    log.debug("Sonic POP: {}", p);
+    this.send(p);
     this.assertOK();
   }
 
@@ -52,10 +60,12 @@ public class IngestChannel extends Channel {
       throw new IllegalArgumentException("bucket is required for counting an object");
     }
 
-    this.send(
+    String c =
         String.format(
             "COUNT %s%s%s",
-            collection, bucket == null ? "" : " " + bucket, object == null ? "" : " " + object));
+            collection, bucket == null ? "" : " " + bucket, object == null ? "" : " " + object);
+    log.debug("Sonic COUNT: {}", c);
+    this.send(c);
     return this.assertResult();
   }
 
@@ -68,18 +78,24 @@ public class IngestChannel extends Channel {
   }
 
   public Integer flushc(@NonNull String collection) throws IOException {
-    this.send(String.format("FLUSHC %s", collection));
+    String f = String.format("FLUSHC %s", collection);
+    log.debug("Sonic FLUSHC: {}", f);
+    this.send(f);
     return this.assertResult();
   }
 
   public Integer flushb(@NonNull String collection, @NonNull String bucket) throws IOException {
-    this.send(String.format("FLUSHB %s %s", collection, bucket));
+    String f = String.format("FLUSHB %s %s", collection, bucket);
+    log.debug("Sonic FLUSHB: {}", f);
+    this.send(f);
     return this.assertResult();
   }
 
   public Integer flusho(@NonNull String collection, @NonNull String bucket, @NonNull String object)
       throws IOException {
-    this.send(String.format("FLUSHO %s %s %s", collection, bucket, object));
+    String f = String.format("FLUSHO %s %s %s", collection, bucket, object);
+    log.debug("Sonic FLUSHO: {}", f);
+    this.send(f);
     return this.assertResult();
   }
 }

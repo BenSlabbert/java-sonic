@@ -1,6 +1,7 @@
 package com.github.twohou.sonic;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class SearchChannel extends Channel {
   public SearchChannel(
       @NonNull String address,
@@ -28,7 +30,7 @@ public class SearchChannel extends Channel {
       Integer limit,
       Integer offset)
       throws IOException {
-    this.send(
+    String q =
         String.format(
             "%s %s %s \"%s\"%s%s",
             SearchType.QUERY.name(),
@@ -36,8 +38,9 @@ public class SearchChannel extends Channel {
             bucket,
             terms,
             limit != null ? String.format(" LIMIT(%d)", limit) : "",
-            offset != null ? String.format(" OFFSET(%d)", offset) : ""));
-
+            offset != null ? String.format(" OFFSET(%d)", offset) : "");
+    log.debug("Sonic QUERY: {}", q);
+    this.send(q);
     String queryId = assertPendingSearch();
     return assertSearchResults(SearchType.QUERY, queryId);
   }
@@ -51,15 +54,16 @@ public class SearchChannel extends Channel {
   public List<String> suggest(
       @NonNull String collection, @NonNull String bucket, @NonNull String word, Integer limit)
       throws IOException {
-    this.send(
+    String s =
         String.format(
             "%s %s %s \"%s\"%s",
             SearchType.SUGGEST.name(),
             collection,
             bucket,
             word,
-            limit != null ? String.format(" LIMIT(%d)", limit) : ""));
-
+            limit != null ? String.format(" LIMIT(%d)", limit) : "");
+    log.debug("Sonic SUGGEST: {}", s);
+    this.send(s);
     String searchId = assertPendingSearch();
     return assertSearchResults(SearchType.SUGGEST, searchId);
   }
@@ -76,6 +80,7 @@ public class SearchChannel extends Channel {
    */
   private String assertPendingSearch() throws IOException {
     String line = this.readLine();
+    log.debug("Sonic PENDING RESPONSE: {}", line);
     Matcher matcher = Pattern.compile("^PENDING ([a-zA-Z0-9]+)$").matcher(line);
     if (!matcher.find()) {
       throw new SonicException("unexpected prompt: " + line);
@@ -86,6 +91,7 @@ public class SearchChannel extends Channel {
   private List<String> assertSearchResults(SearchType searchType, String searchId)
       throws IOException {
     String line = this.readLine();
+    log.debug("Sonic EVENT RESPONSE: {}", line);
     Matcher matcher =
         Pattern.compile("^EVENT " + searchType.name() + " " + searchId + " (.+)?$").matcher(line);
 

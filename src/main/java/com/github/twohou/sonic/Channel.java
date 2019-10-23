@@ -1,6 +1,7 @@
 package com.github.twohou.sonic;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -8,6 +9,7 @@ import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public abstract class Channel {
 
   private Socket socket;
@@ -34,7 +36,6 @@ public abstract class Channel {
       @NonNull Integer readTimeout)
       throws IOException {
     this.password = password;
-
     this.socket = new Socket();
     this.socket.connect(new InetSocketAddress(address, port), connectionTimeout);
     this.socket.setSoTimeout(readTimeout);
@@ -59,6 +60,7 @@ public abstract class Channel {
 
   protected Integer assertResult() throws IOException {
     String prompt = this.readLine();
+    log.debug("RESULT Sonic: {}", prompt);
     Pattern pattern = Pattern.compile("^RESULT ([0-9]+)$");
     Matcher matcher = pattern.matcher(prompt);
     if (!matcher.find()) {
@@ -69,23 +71,30 @@ public abstract class Channel {
 
   protected void assertPrompt(@NonNull String regexp) throws IOException {
     String prompt = this.readLine();
+    log.debug("AssertPrompt: {} Sonic: {}", regexp.trim(), prompt);
     if (Pattern.matches(regexp, prompt)) {
       throw new SonicException("unexpected prompt: " + prompt);
     }
   }
 
   public void start(@NonNull Mode mode) throws IOException {
-    this.send(String.format("START %s %s", mode.name(), this.password));
+    String s = String.format("START %s %s", mode.name(), this.password);
+    log.debug("Sonic START: {}", s);
+    this.send(s);
     this.assertPrompt("^STARTED");
   }
 
   public void ping() throws IOException {
-    this.send("PING");
+    String p = "PING";
+    log.debug("Sonic PING: {}", p);
+    this.send(p);
     this.assertPrompt("^PONG\r\n$");
   }
 
   public void quit() throws IOException {
-    this.send("QUIT");
+    String q = "QUIT";
+    log.debug("Sonic QUIT: {}", q);
+    this.send(q);
     this.assertPrompt("^ENDED\r\n$");
     this.socket.close();
   }
